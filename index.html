@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1A7A6E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Money">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>Money</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #1A7A6E;
+    --teal-light: #e8f4f2;
+    --teal-dark: #0f5049;
+    --text: #111;
+    --text-mid: #555;
+    --text-muted: #888;
+    --border: #e0e0e0;
+    --surface: #f7f7f5;
+    --white: #ffffff;
+    --danger: #c0392b;
+    --success: #1A7A6E;
+    --radius: 10px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  header {
+    background: var(--teal);
+    color: white;
+    padding: 1rem 1.25rem 1.25rem;
+    padding-top: calc(1rem + env(safe-area-inset-top));
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .summary-card {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+
+  .summary-card.full {
+    grid-column: 1 / -1;
+    background: rgba(255,255,255,0.22);
+  }
+
+  .summary-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin-bottom: 3px;
+  }
+
+  .summary-value {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .summary-card.full .summary-value {
+    font-size: 30px;
+  }
+
+  .summary-value.negative { color: #ffb3ad; }
+
+  main { padding: 1.25rem; }
+
+  section { margin-bottom: 1.5rem; }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-subtotal {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  .items-list {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+
+  .item:last-child { border-bottom: none; }
+
+  .item-name {
+    flex: 1;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .item-amount {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 72px;
+    text-align: right;
+  }
+
+  .item-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border);
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 4px;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s;
+  }
+
+  .item-delete:active { color: var(--danger); }
+
+  .empty-state {
+    padding: 14px;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .add-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-row input {
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    font-size: 15px;
+    color: var(--text);
+    padding: 0 12px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .add-row input:focus { border-color: var(--teal); }
+
+  .add-row input[type="text"] { flex: 1; }
+
+  .add-row input[type="number"] {
+    width: 96px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .add-btn {
+    height: 44px;
+    width: 44px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--teal);
+    color: white;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  .add-btn:active { background: var(--teal-dark); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0.5rem 0 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Money</h1>
+  <div class="summary">
+    <div class="summary-card">
+      <div class="summary-label">Income</div>
+      <div class="summary-value" id="hd-income">$0</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Bills</div>
+      <div class="summary-value" id="hd-bills">$0</div>
+    </div>
+    <div class="summary-card full">
+      <div class="summary-label" id="surplus-label">Monthly surplus</div>
+      <div class="summary-value" id="hd-surplus">$0</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="section-header">
+      <span class="section-title">Income</span>
+      <span class="section-subtotal" id="income-subtotal"></span>
+    </div>
+    <div class="items-list" id="income-list"></div>
+    <div class="add-row">
+      <input type="text" id="income-name" placeholder="Source" autocomplete="off">
+      <input type="number" id="income-amt" placeholder="$/mo" min="0" inputmode="decimal">
+      <button class="add-btn" onclick="addItem('income')" aria-label="Add income">+</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="section-header">
+      <span class="section-title">Bills &amp; expenses</span>
+      <span class="section-subtotal" id="bills-subtotal"></span>
+    </div>
+    <div class="items-list" id="bills-list"></div>
+    <div class="add-row">
+      <input type="text" id="bills-name" placeholder="Bill or expense" autocomplete="off">
+      <input type="number" id="bills-amt" placeholder="$/mo" min="0" inputmode="decimal">
+      <button class="add-btn" onclick="addItem('bills')" aria-label="Add bill">+</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const KEY = 'money-tracker-v1';
+  let data = { income: [], bills: [] };
+
+  function load() {
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved) data = JSON.parse(saved);
+    } catch(e) {}
+    render();
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function render() {
+    const totalIncome = data.income.reduce((s, i) => s + i.amt, 0);
+    const totalBills  = data.bills.reduce((s, i) => s + i.amt, 0);
+    const surplus     = totalIncome - totalBills;
+    const isNeg       = surplus < 0;
+
+    document.getElementById('hd-income').textContent   = fmt(totalIncome);
+    document.getElementById('hd-bills').textContent    = fmt(totalBills);
+    document.getElementById('hd-surplus').textContent  = fmt(Math.abs(surplus));
+    document.getElementById('hd-surplus').className    = 'summary-value' + (isNeg ? ' negative' : '');
+    document.getElementById('surplus-label').textContent = isNeg ? 'Monthly shortfall' : 'Monthly surplus';
+    document.getElementById('income-subtotal').textContent = totalIncome ? fmt(totalIncome) : '';
+    document.getElementById('bills-subtotal').textContent  = totalBills  ? fmt(totalBills)  : '';
+
+    ['income', 'bills'].forEach(type => {
+      const el = document.getElementById(type + '-list');
+      if (!data[type].length) {
+        el.innerHTML = '<div class="empty-state">Nothing added yet</div>';
+        return;
+      }
+      el.innerHTML = data[type].map((item, i) => `
+        <div class="item">
+          <span class="item-name">${item.name}</span>
+          <span class="item-amount">${fmt(item.amt)}</span>
+          <button class="item-delete" onclick="removeItem('${type}',${i})" aria-label="Remove ${item.name}">×</button>
+        </div>
+      `).join('');
+    });
+  }
+
+  function addItem(type) {
+    const nameEl = document.getElementById(type + '-name');
+    const amtEl  = document.getElementById(type + '-amt');
+    const name   = nameEl.value.trim();
+    const amt    = parseFloat(amtEl.value);
+    if (!name || isNaN(amt) || amt <= 0) return;
+    data[type].push({ name, amt });
+    nameEl.value = '';
+    amtEl.value  = '';
+    nameEl.focus();
+    save();
+    render();
+  }
+
+  function removeItem(type, i) {
+    data[type].splice(i, 1);
+    save();
+    render();
+  }
+
+  ['income', 'bills'].forEach(type => {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById(type + '-amt')
+        .addEventListener('keydown', e => { if (e.key === 'Enter') addItem(type); });
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+
+  load();
+</script>
+</body>
+</html>
