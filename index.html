@@ -436,28 +436,6 @@
 
       const orderedCats = data.categories.filter(c => grouped[c]);
       const extraCats = Object.keys(grouped).filter(c => !data.categories.includes(c));
-      [...orderedCats, ...extraCats].forEach(cat => {
-        const items = grouped[cat];
-        const catTotal = items.reduce((s, i) => s + i.amt, 0);
-        const block = document.createElement('div');
-        block.className = 'items-list';
-        block.style.marginBottom = '10px';
-        block.innerHTML = `
-          <div class="cat-header">
-            <span class="cat-name">${cat}</span>
-            <span class="cat-total">${fmt(catTotal)}</span>
-          </div>
-          ${items.map(item => `
-            <div class="item">
-              <span class="item-name">${item.name}</span>
-              <span class="item-amount">${fmt(item.amt)}</span>
-              <button class="item-delete" onclick="removeBill(${item.idx})" aria-label="Remove">×</button>
-            </div>
-          `).join('')}
-        `;
-        billsEl.innerHTML = '';
-        billsEl.appendChild(block);
-      });
 
       billsEl.innerHTML = [...orderedCats, ...extraCats].map(cat => {
         const items = grouped[cat];
